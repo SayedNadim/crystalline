@@ -2,7 +2,7 @@
 
 - MAC installation issues. 
     - globally managed packages vs locally managed packages for conda.
-    - brew based installation of dill
+    - brew-based installation of dill
 - Linux
     - No issues.
     - sudo access, didn't try the local installation
