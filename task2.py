@@ -1,12 +1,14 @@
-import dill as pickle
 import logging
 from abc import ABC, abstractmethod
+
+import dill as pickle
 from aalpy.automata import MealyMachine
 from aalpy.base import SUL
-from aalpy.oracles import RandomWalkEqOracle
 from aalpy.learning_algs import run_Lstar
+from aalpy.oracles import RandomWalkEqOracle
 from aalpy.utils import visualize_automaton
 from tqdm import tqdm
+
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -73,6 +75,7 @@ class VendingMachineSUL(SUL): # tried with PyClassSUL, PyMethodSUL,
         elif action == 'push_button':
             return self.vending_machine.push_button(value)
 
+
 # 1. Function to learn models for a list of vending machines
 def learn_models(vending_machines):
     learned_models = []
@@ -94,12 +97,18 @@ def learn_models(vending_machines):
             # Running the L* algorithm to learn a Mealy machine for each vending machine
             model = run_Lstar(alphabet=alphabet, sul=sul, eq_oracle=eq_oracle, automaton_type='mealy')
             logger.info(f"Model for Vending Machine {idx + 1} learned successfully.")
+
+            # Visualize the learned model
+            visualize_automaton(model, path=f'vending_machine_model_{idx + 1}.png', file_type='png')
+            logger.info(f"Model for Vending Machine {idx + 1} visualized and saved as vending_machine_model_{idx + 1}.png")
+
         except Exception as e:
             logger.error(f"Error learning model for Vending Machine {idx + 1}: {e}")
             continue
 
         learned_models.append(model)
     return learned_models
+
 
 # 2. Function to validate a model's response for valid inputs
 def validate_model(model, valid_inputs):
@@ -117,7 +126,7 @@ def compare_models(models):
 
     # Define valid inputs and expected outputs
     # The valid inputs are based on the assignment.
-    # # TODO: I assumed them. Might be wrong. Needs more checking
+    # # TODO: I assumed the valid ouptuts. Might be wrong. Needs more checking
     valid_inputs = [
         (('add_coin', 0.5), "coin_added"), 
         (('add_coin', 1), "coin_added"), 
@@ -151,6 +160,7 @@ def compare_models(models):
             logger.warning(f"Model {idx + 1} failed validation.")
 
     return correct_model, faults
+
 
 # 4. Function to compare two Mealy machines
 def compare_mealy_machines(machine_a, machine_b, valid_inputs):
